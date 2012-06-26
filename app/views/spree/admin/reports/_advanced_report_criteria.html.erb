@@ -43,8 +43,8 @@
 </div>
 
 <% content_for :head do -%>
-<%= javascript_include_tag 'admin/jquery.tablesorter.min.js', 'admin/advanced_reporting.js' %>
-<%= stylesheet_link_tag 'admin/advanced_reporting' %>
+<% #= javascript_include_tag 'admin/jquery.tablesorter.min.js', 'admin/advanced_reporting.js' %>
+<% #= stylesheet_link_tag 'admin/advanced_reporting' %>
 <script type="text/javascript">
 var created_at_lt = "<%= (@report.unfiltered_params && @report.unfiltered_params[:created_at_lt]) ? @report.unfiltered_params[:created_at_lt] : '' %>";
 var created_at_gt = "<%= (@report.unfiltered_params && @report.unfiltered_params[:created_at_gt]) ? @report.unfiltered_params[:created_at_gt] : '' %>";
