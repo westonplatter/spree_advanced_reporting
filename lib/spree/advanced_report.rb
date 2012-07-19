@@ -107,6 +107,8 @@ module Spree
       elsif !self.taxon.nil?
         profit = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price.to_f)*li.quantity }
       end
+      adjustments_profit = order.adjustments.sum(:amount) - order.adjustments.sum(:cost)
+      profit += adjustments_profit
       self.product_in_taxon ? profit : 0
     end
 
