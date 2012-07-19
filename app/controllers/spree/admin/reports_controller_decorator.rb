@@ -54,7 +54,7 @@ Spree::Admin::ReportsController.class_eval do
   def base_report_render(filename)
     params[:advanced_reporting] ||= {}
     params[:advanced_reporting]["report_type"] = params[:advanced_reporting]["report_type"].to_sym if params[:advanced_reporting]["report_type"]
-    params[:advanced_reporting]["report_type"] ||= :daily
+    params[:advanced_reporting]["report_type"] ||= I18n.t("adv_report.daily").downcase.to_sym
     respond_to do |format|
       format.html { render :template => "spree/admin/reports/increment_base" }
       # format.pdf do

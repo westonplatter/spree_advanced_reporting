@@ -37,7 +37,7 @@ class Spree::AdvancedReport::IncrementReport::Revenue < Spree::AdvancedReport::I
 
     generate_ruport_data
 
-    INCREMENTS.each { |type| ruportdata[type].replace_column("Revenue") { |r| "$%0.2f" % r["Revenue"] } }
+    INCREMENTS.each { |type| ruportdata[type].replace_column(name) { |r| "$%0.2f" % r[name] } }
   end
 
   def format_total

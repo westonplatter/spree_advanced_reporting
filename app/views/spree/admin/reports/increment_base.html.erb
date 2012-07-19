@@ -1,5 +1,5 @@
 <% @report.increments.each do |type| -%>
-    <div id="<%= type.to_s %>_data" <%= 'style=display:none;' if type.to_s != 'daily' %> class="advanced_reporting_data">
+    <div id="<%= type.to_s %>_data" <%= 'style=display:none;' if type.to_s != t("adv_report.daily").downcase %> class="advanced_reporting_data">
         <div id="<%= type.to_s %>_chart"></div>
         <%= raw @report.ruportdata[type].to_html %>
     </div>
@@ -20,7 +20,7 @@
 
     <ul id="show_data">
         <% @report.increments.each do |inc| %>
-            <li <%= 'class=selected' if inc == :daily %> id="<%= inc.to_s %>">
+            <li <%= 'class=selected' if inc == t("adv_report.daily").downcase.to_sym %> id="<%= inc.to_s %>">
                 <label><%= inc.to_s.capitalize %></label><br />
                 <a href="<%= @report.download_url(request.fullpath, 'csv', inc.to_s) %>">CSV</a>
             </li>

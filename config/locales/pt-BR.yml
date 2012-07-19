@@ -1,5 +1,11 @@
 pt-BR:
   adv_report:
+    increments:
+      - diario
+      - semanal
+      - mensal
+      - trimestral
+      - anual
     dashboard: Dashboard
     daily: Diario
     weekly: Semanal
@@ -16,6 +22,8 @@ pt-BR:
     geo_revenue: "Receita por Estado"
     geo_units: "Unidades por Estado"
     geo_profit: "Lucro por Estado"
+    states: Estados
+    countries: Paises
     base:
       range: Intervalo
       from: De
@@ -26,9 +34,19 @@ pt-BR:
       description: "Relatório avançado base"
     top_report:
       top_customers:
+        table:
+          - email
+          - Unidades
+          - Receita
+        customer_email: Email do cliente
         name: "Melhores Clientes"
         description: "Clientes que mais compraram, calculado pela receita"
       top_products:
+        table:
+          - name
+          - Unidades
+          - Receita
+        product_name: "Nome do Produto"
         name: "Produtos mais vendidos por receita"
         description: "Produtos mais vendidos, calculado pela receita"
     increment_report:
@@ -50,14 +68,23 @@ pt-BR:
         column: "Unidades"
     geo_report:
       profit:
+        table:
+          - location
+          - Lucro
         name: "Lucro por Estado"
         description: "Lucro dividido geograficamente em estados"
         column: "Lucro"
       revenue:
+        table:
+          - location
+          - Receita
         name: "Receita por Estado"
         description: "Receita dividida geograficamente em estados"
         column: "Receita"
       units:
+        table:
+          - location
+          - Unidades
         name: "Unidades vendidas por Estado"
         description: Unidades vendidas divididas geograficamente em estados
         column: "Unidades"
