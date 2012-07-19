@@ -36,11 +36,11 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
       end
     end
 
-    sales_total = 0
+    @sales_total = 0
 
     card_listing.keys.sort.each do |card_name|
       card_total = card_listing[card_name].map { |c| c["total"] }.sum
-      sales_total += card_total
+      @sales_total += card_total
 
       ruportdata << {
         "date" => "<b>#{card_name.capitalize} (#{card_listing[card_name].count}): #{number_to_currency(card_total)}</b>"
@@ -52,7 +52,7 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
       end
     end
     
-    ruportdata << { "date" => "<b>Sales Total: #{number_to_currency(sales_total)}</b>" }
+    ruportdata << { "date" => "<b>Sales Total: #{number_to_currency(@sales_total)}</b>" }
 
     # spaces don't seem to work in column names (ruport is old...)
     ruportdata.rename_column("date", "Transaction Date")
@@ -60,5 +60,9 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
     ruportdata.rename_column("id", "Transaction ID")
     ruportdata.rename_column("total", "Payment Total")
     ruportdata.rename_column("state", "Payment State")
+  end
+
+  def sales_total
+    @sales_total
   end
 end
