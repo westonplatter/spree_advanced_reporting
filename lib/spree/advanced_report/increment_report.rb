@@ -29,7 +29,7 @@ class Spree::AdvancedReport::IncrementReport < Spree::AdvancedReport
       :yearly => {
         :date_bucket => "%Y",
         :date_display => "%Y",
-        :header_display => 'Yearly',
+        :header_display => I18n.t("adv_report.yearly"),
       }
     }
   end

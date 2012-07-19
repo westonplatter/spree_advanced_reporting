@@ -111,11 +111,11 @@ module Spree
     end
 
     def units(order)
-      units = order.line_items.sum(:quantity)
+      units = order.line_items.inject(0){ |units, li| units + (li.quantity * li.variant.bundle_quantity)}
       if !self.product.nil? && product_in_taxon
-        units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity }
+        units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += (b.quantity * b.variant.bundle_quantity) }
       elsif !self.taxon.nil?
-        units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
+        units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += (b.quantity * b.variant.bundle_quantity) }
       end
       self.product_in_taxon ? units : 0
     end

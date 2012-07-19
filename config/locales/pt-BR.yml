@@ -1,10 +1,11 @@
 pt-BR:
   adv_report:
     dashboard: Dashboard
-    daily: Diário
+    daily: Diario
     weekly: Semanal
     monthly: Mensal
-    Quaterly: Trimestral
+    quaterly: Trimestral
+    yearly: Anual
     revenue: Receita
     units: Unidades
     profit: Lucro
