@@ -51,9 +51,9 @@ pt-BR:
         description: "Produtos mais vendidos, calculado pela receita"
     increment_report:
       count:
-        name: "Num. Pedidos"
+        name: "Pedidos"
         description: "Numero total de pedidos completos"
-        column: "Numero"
+        column: "Pedidos"
       profit:
         name: "Lucro"
         description: "Lucro total em pedidos, onde lucro é a soma das quantidades de produtos vezes seu preço, menos seu custo, sem ajustes"
@@ -63,7 +63,7 @@ pt-BR:
         description: "Receita total em pedidos, onde receita é a soma dos preços os itens do pedido sem ajustes, como impostos e frete"
         column: "Receita"
       units:
-        name: "Unidades Vendidas"
+        name: "Unidades"
         description: "Quantidade de itens vendidos em pedidos, a soma das quantidades de itens por ordem ou por produto"
         column: "Unidades"
     geo_report:
