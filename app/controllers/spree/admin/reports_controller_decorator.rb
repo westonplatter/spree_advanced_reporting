@@ -10,7 +10,7 @@ Spree::Admin::ReportsController.class_eval do
   I18n.reload!
 
   ADVANCED_REPORTS ||= {}
-  [ :revenue, :units, :profit, :count, :top_products, :top_customers, :geo_revenue, :geo_units, :geo_profit].each do |x|
+  [ :outstanding, :revenue, :units, :profit, :count, :top_products, :top_customers, :geo_revenue, :geo_units, :geo_profit].each do |x|
     ADVANCED_REPORTS[x]= {name: I18n.t("adv_report."+x.to_s), :description => I18n.t("adv_report."+x.to_s)}
   end
 
@@ -72,6 +72,11 @@ Spree::Admin::ReportsController.class_eval do
         end
       end
     end
+  end
+  
+  def outstanding
+    @orders = Spree::Order.complete.select{ |o| o.outstanding_balance? }
+    @outstanding_balance = @orders.inject(0){ |outstanding, o| outstanding += o.outstanding_balance }
   end
 
   def revenue

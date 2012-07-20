@@ -1,10 +1,10 @@
 class Spree::AdvancedReport::TopReport::TopCustomers < Spree::AdvancedReport::TopReport
   def name
-    I18n.t("adv_report.top_report.name")
+    I18n.t("adv_report.top_report.top_customers.name")
   end
 
   def description
-    I18n.t("adv_report.top_report.description")
+    I18n.t("adv_report.top_report.top_customers.description")
   end
 
   def initialize(params, limit)
@@ -22,7 +22,7 @@ class Spree::AdvancedReport::TopReport::TopCustomers < Spree::AdvancedReport::To
       end
     end
 
-    self.ruportdata = Table(I18n.t("adv_report.top_report.top_products.table"))
+    self.ruportdata = Table(I18n.t("adv_report.top_report.top_customers.table"))
     data.inject({}) { |h, (k, v) | h[k] = v[:revenue]; h }.sort { |a, b| a[1] <=> b [1] }.reverse[0..4].each do |k, v|
       ruportdata << { "email" => data[k][:email], I18n.t("adv_report.units") => data[k][:units], I18n.t("adv_report.revenue") => data[k][:revenue] } 
     end

@@ -23,7 +23,9 @@
     <% if @taxons -%>
         <%=t "taxons"%>: <br /><%= collection_select(:advanced_reporting, :taxon_id, @taxons, :id, :name, { :include_blank => 'All' } ) %><br />
     <% end -%>
-    <%=t :products%>:<br /><%= collection_select(:advanced_reporting, :product_id, @products, :id, :name, { :include_blank => 'All' } ) %><br />
+    <%=t :products %>:<br /><%= collection_select(:advanced_reporting, :product_id, @products, :id, :name, { :include_blank => 'All' } ) %><br />
+    <%=t :states %>:<br />
+      <%= select :search, :state_equals, order_states_options, selected: params[:search][:state_equals] %><br />
     </div>
 
     <%= t("date_range") %><br />

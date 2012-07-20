@@ -22,6 +22,8 @@ pt-BR:
     geo_revenue: "Receita por Estado"
     geo_units: "Unidades por Estado"
     geo_profit: "Lucro por Estado"
+    outstanding: "Recebiveis"
+    outstanding_description: "Valor a ser pago por clientes que parcelaram a compra"
     states: Estados
     countries: Paises
     base:
