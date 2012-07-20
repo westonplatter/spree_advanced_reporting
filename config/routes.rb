@@ -6,7 +6,7 @@
   #    end
   #  end
   #end
-  match '/admin/reports/outstanding' => 'admin/reports#outstanding',  :via  => [:get],
+  match '/admin/reports/outstanding' => 'admin/reports#outstanding',  :via  => [:get, :post],
                                                               :as   => 'outstanding_admin_reports'
                                                               
   match '/admin/reports/revenue' => 'admin/reports#revenue',  :via  => [:get, :post],
