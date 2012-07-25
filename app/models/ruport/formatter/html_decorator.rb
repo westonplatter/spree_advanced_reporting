@@ -22,4 +22,8 @@ Ruport::Formatter::HTML.class_eval do
         "</th>\n\t\t</tr></thead>\n"
     end
   end
+
+  def build_group_header
+    output << "\t<h1>#{data.name}</h1>\n"
+  end
 end

@@ -1,3 +1,4 @@
+---
 en:
   sales_total_description: "Sales Total"
   sales_total: "Sales Total"
@@ -12,3 +13,4 @@ en:
     geo_revenue: "Geo Revenue"
     geo_units: "Geo Units"
     geo_profit: "Geo Profit"
+    transactions: Transactions

@@ -1,11 +1,6 @@
  Spree::Core::Engine.routes.prepend do
-  #namespace :admin do
-  #  resources :reports, :only => [:index, :show] do
-  #    collection do
-  #      get :sales_total
-  #    end
-  #  end
-  #end
+  # TODO there is no way this is the best way to handle this...
+
   match '/admin/reports/revenue' => 'admin/reports#revenue',  :via  => [:get, :post],
                                                               :as   => 'revenue_admin_reports'
 
