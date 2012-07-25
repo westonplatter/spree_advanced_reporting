@@ -13,7 +13,10 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
   def initialize(params)
     super(params)
 
-    self.ruportdata = Table(%w[date type id total state])
+    self.ruportdata = Ruport::Data::Group.new({
+      :name => "#{self.name} #{self.date_range}",
+      :column_names => %w[date type id total state]
+    })
 
     card_listing = {}
 
@@ -22,13 +25,13 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
         # create a direct link for easy inspection
         gateway_link = payment.response_code
 
-        if payment.payment_method.type == "Spree::Gateway::AuthorizeNetCim"
+        if payment.payment_method.type == "Spree::Gateway::AuthorizeNetCim" and payment.response_code.present?
           gateway_link = link_to(payment.response_code, "https://account.authorize.net/UI/themes/anet/transaction/transactiondetail.aspx?transID=#{payment.response_code}", target: '_blank')
         end
 
         (card_listing[payment.source.cc_type] ||= []) << {
-          "date" => payment.source.created_at,
-          "type" => payment.source.cc_type.capitalize,
+          "date" => payment.source.created_at.to_formatted_s(:db),
+          "type" => payment.source.cc_type.humanize.titlecase,
           "id" => gateway_link,
           "total" => payment.amount,
           "state" => payment.state,
@@ -43,7 +46,7 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
       @sales_total += card_total
 
       ruportdata << {
-        "date" => "<b>#{card_name.capitalize} (#{card_listing[card_name].count}): #{number_to_currency(card_total)}</b>"
+        "date" => "<b>#{card_name.humanize.titlecase} (#{card_listing[card_name].count}): #{number_to_currency(card_total)}</b>"
       }
 
       card_listing[card_name].each do |transaction|

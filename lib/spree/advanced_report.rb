@@ -18,26 +18,29 @@ module Spree
       self.unfiltered_params = params[:search].blank? ? {} : params[:search].clone
 
       params[:search] ||= {}
-      if params[:search][:created_at_gt].blank?
-        if (Order.count > 0) && Order.minimum(:completed_at)
+
+      if Order.count > 0
+        begin
+          params[:search][:created_at_gt] = Time.zone.parse(params[:search][:created_at_gt]).beginning_of_day
+        rescue 
           params[:search][:created_at_gt] = Order.minimum(:completed_at).beginning_of_day
         end
-      else
-        params[:search][:created_at_gt] = Time.zone.parse(params[:search][:created_at_gt]).beginning_of_day rescue ""
-      end
-      if params[:search][:created_at_lt].blank?
-        if (Order.count > 0) && Order.maximum(:completed_at)
+
+        begin
+          params[:search][:created_at_lt] = Time.zone.parse(params[:search][:created_at_lt]).end_of_day
+        rescue
           params[:search][:created_at_lt] = Order.maximum(:completed_at).end_of_day
         end
-      else
-        params[:search][:created_at_lt] = Time.zone.parse(params[:search][:created_at_lt]).end_of_day rescue ""
       end
 
       params[:search][:completed_at_not_null] = true
       params[:search][:state_not_eq] = 'canceled'
 
       search = Order.search(params[:search])
+
+      # choosing not to do any state filtering here, this is left to the report writer
       # self.orders = search.state_does_not_equal('canceled')
+
       self.orders = search.result
 
       self.product_in_taxon = true
@@ -124,6 +127,14 @@ module Spree
 
     def order_count(order)
       self.product_in_taxon ? 1 : 0
+    end
+
+    def date_range
+      if self.params[:search][:created_at_gt].to_date == self.params[:search][:created_at_lt].to_date
+        self.params[:search][:created_at_gt].to_date
+      else
+        "#{self.params[:search][:created_at_gt].to_date} &ndash; #{self.params[:search][:created_at_lt].to_date}"
+      end
     end
   end
 end
