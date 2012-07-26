@@ -23,13 +23,13 @@ module Spree
         begin
           params[:search][:created_at_gt] = Time.zone.parse(params[:search][:created_at_gt]).beginning_of_day
         rescue 
-          params[:search][:created_at_gt] = Order.minimum(:completed_at).beginning_of_day
+          params[:search][:created_at_gt] = Date.today.beginning_of_day
         end
 
         begin
           params[:search][:created_at_lt] = Time.zone.parse(params[:search][:created_at_lt]).end_of_day
         rescue
-          params[:search][:created_at_lt] = Order.maximum(:completed_at).end_of_day
+          params[:search][:created_at_lt] = Date.today.end_of_day
         end
       end
 
