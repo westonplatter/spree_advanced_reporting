@@ -131,7 +131,7 @@ module Spree
 
     def date_range
       if self.params[:search][:created_at_gt].to_date == self.params[:search][:created_at_lt].to_date
-        self.params[:search][:created_at_gt].to_date
+        self.params[:search][:created_at_gt].to_s
       else
         "#{self.params[:search][:created_at_gt].to_date} &ndash; #{self.params[:search][:created_at_lt].to_date}"
       end
