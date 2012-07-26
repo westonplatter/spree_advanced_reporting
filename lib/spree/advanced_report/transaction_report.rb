@@ -42,7 +42,7 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
     @sales_total = 0
 
     card_listing.keys.sort.each do |card_name|
-      card_total = card_listing[card_name].map { |c| c["total"] }.sum
+      card_total = card_listing[card_name].map { |c| c["total"] * (c["state"] == 'void' ? 0 : 1) }.sum
       @sales_total += card_total
 
       ruportdata << {
