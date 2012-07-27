@@ -97,6 +97,8 @@ module Spree
       elsif !self.taxon.nil?
         rev = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity * b.price }
       end
+      adjustment_revenue = order.adjustments.sum(:amount)
+      rev += adjustment_revenue if rev > 0
       self.product_in_taxon ? rev : 0
     end
 
