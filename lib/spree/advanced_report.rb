@@ -26,6 +26,9 @@ module Spree
           params[:search][:created_at_gt] = Date.today.beginning_of_day
         end
 
+        # TODO if lt is defined, and gt is not, gt then should use better default than end of today
+        # maybe 24 hours before the defined lt end of day
+        
         begin
           params[:search][:created_at_lt] = Time.zone.parse(params[:search][:created_at_lt]).end_of_day
         rescue
@@ -131,7 +134,7 @@ module Spree
 
     def date_range
       if self.params[:search][:created_at_gt].to_date == self.params[:search][:created_at_lt].to_date
-        self.params[:search][:created_at_gt].to_s
+        self.params[:search][:created_at_gt].to_date.to_s
       else
         "#{self.params[:search][:created_at_gt].to_date} &ndash; #{self.params[:search][:created_at_lt].to_date}"
       end
