@@ -37,7 +37,7 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
           credit_cart_type = payment.source.source.cc_type
         end
 
-        (card_listing[payment.source.cc_type] ||= []) << {
+        (card_listing[credit_cart_type] ||= []) << {
           "date" => payment.source.created_at.to_formatted_s(:db),
           "type" => payment.source.cc_type.humanize.titlecase,
           "id" => gateway_link,
