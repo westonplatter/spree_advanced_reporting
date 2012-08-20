@@ -15,12 +15,12 @@
 
     <ul id="show_data">
         <li class="selected" id="state">
-            <label>States</label><br />
+            <label><%= t("adv_report.states") %></label><br />
             <%= link_to "CSV", @report.download_url(request.fullpath, 'csv', "state") %>
             <%= link_to "PDF", @report.download_url(request.fullpath, 'pdf', "state") %>
         </li>
         <li id="country">
-            <label>Countries</label><br />
+            <label><%= t("adv_report.countries") %></label><br />
             <%= link_to "CSV", @report.download_url(request.fullpath, 'csv', "country") %>
             <%= link_to "PDF", @report.download_url(request.fullpath, 'pdf', "country") %>
         </li>
@@ -49,7 +49,7 @@ data_<%= type.to_s %>.setValue(<%= i.to_s %>, 1, <%= p.data[@report.column].to_s
 
 var options_<%= type.to_s %> = { 'width' : '800px', 'height' : '500px' };
 <% if type == :state %> 
-    options_<%= type.to_s %>['region'] = 'US';
+    options_<%= type.to_s %>['region'] = 'BR';
         <% end -%>
 
 var <%= type.to_s %>_container = document.getElementById('<%= type.to_s %>_canvas');

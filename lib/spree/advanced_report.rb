@@ -4,11 +4,11 @@ module Spree
     attr_accessor :orders, :product_text, :date_text, :taxon_text, :ruportdata, :data, :params, :taxon, :product, :product_in_taxon, :unfiltered_params
 
     def name
-      "Base Advanced Report"
+      I18n.t("adv_report.base.name")
     end
 
     def description
-      "Base Advanced Report"
+      I18n.t("adv_report.base.description")
     end
 
     def initialize(params)
@@ -36,10 +36,14 @@ module Spree
         end
       end
 
+<<<<<<< HEAD
       params[:search][:completed_at_not_null] = true
       params[:search][:state_not_eq] = 'canceled'
 
       search = Order.search(params[:search])
+=======
+      params[:search][:state_equals] ||= "complete"
+>>>>>>> angelim/i18n-1-0
 
       # choosing not to do any state filtering here, this is left to the report writer
       # self.orders = search.state_does_not_equal('canceled')
@@ -67,19 +71,28 @@ module Spree
       end
 
       # Above searchlogic date settings
-      self.date_text = "Date Range:"
+      self.date_text = "#{I18n.t("adv_report.base.range")}:"
       if self.unfiltered_params
+<<<<<<< HEAD
         if self.unfiltered_params[:created_at_gt] != '' && self.unfiltered_params[:created_at_lt] != ''
           self.date_text += " From #{self.unfiltered_params[:created_at_gt]} to #{self.unfiltered_params[:created_at_lt]}"
         elsif self.unfiltered_params[:created_at_gt] != ''
           self.date_text += " After #{self.unfiltered_params[:created_at_gt]}"
         elsif self.unfiltered_params[:created_at_lt] != ''
           self.date_text += " Before #{self.unfiltered_params[:created_at_lt]}"
+=======
+        if self.unfiltered_params[:created_at_greater_than] != '' && self.unfiltered_params[:created_at_less_than] != ''
+          self.date_text += " #{I18n.t("adv_report.base.from")} #{self.unfiltered_params[:created_at_greater_than]} to #{self.unfiltered_params[:created_at_less_than]}"
+        elsif self.unfiltered_params[:created_at_greater_than] != ''
+          self.date_text += " #{I18n.t("adv_report.base.after")} #{self.unfiltered_params[:created_at_greater_than]}"
+        elsif self.unfiltered_params[:created_at_less_than] != ''
+          self.date_text += " #{I18n.t("adv_report.base.before")} #{self.unfiltered_params[:created_at_less_than]}"
+>>>>>>> angelim/i18n-1-0
         else
-          self.date_text += " All"
+          self.date_text += " #{I18n.t("adv_report.base.all")}"
         end
       else
-        self.date_text += " All"
+        self.date_text += " #{I18n.t("adv_report.base.all")}"
       end
     end
 
@@ -105,6 +118,8 @@ module Spree
       elsif !self.taxon.nil?
         rev = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity * b.price }
       end
+      adjustment_revenue = order.adjustments.sum(:amount)
+      rev += adjustment_revenue if rev > 0
       self.product_in_taxon ? rev : 0
     end
 
@@ -115,15 +130,17 @@ module Spree
       elsif !self.taxon.nil?
         profit = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price.to_f)*li.quantity }
       end
+      adjustments_profit = order.adjustments.sum(:amount) - order.adjustments.sum(:cost)
+      profit += adjustments_profit
       self.product_in_taxon ? profit : 0
     end
 
     def units(order)
-      units = order.line_items.sum(:quantity)
+      units = order.line_items.inject(0){ |units, li| units + (li.quantity * li.variant.bundle_quantity)}
       if !self.product.nil? && product_in_taxon
-        units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity }
+        units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += (b.quantity * b.variant.bundle_quantity) }
       elsif !self.taxon.nil?
-        units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
+        units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += (b.quantity * b.variant.bundle_quantity) }
       end
       self.product_in_taxon ? units : 0
     end

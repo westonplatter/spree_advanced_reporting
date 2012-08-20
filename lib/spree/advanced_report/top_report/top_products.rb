@@ -1,10 +1,10 @@
 class Spree::AdvancedReport::TopReport::TopProducts < Spree::AdvancedReport::TopReport
   def name
-    "Top Selling Products by Revenue"
+    I18n.t("adv_report.top_report.top_products.name")
   end
 
   def description
-    "Top selling products, calculated by revenue"
+    I18n.t("adv_report.top_report.top_products.description")
   end
 
   def initialize(params, limit)
@@ -24,11 +24,12 @@ class Spree::AdvancedReport::TopReport::TopProducts < Spree::AdvancedReport::Top
       end
     end
 
-    self.ruportdata = Table(%w[name Units Revenue])
+    self.ruportdata = Table(I18n.t("adv_report.top_report.top_products.table"))
     data.inject({}) { |h, (k, v) | h[k] = v[:revenue]; h }.sort { |a, b| a[1] <=> b [1] }.reverse[0..limit].each do |k, v|
-      ruportdata << { "name" => data[k][:name], "Units" => data[k][:units], "Revenue" => data[k][:revenue] } 
+      ruportdata << { "name" => data[k][:name], I18n.t("adv_report.units") => data[k][:units], I18n.t("adv_report.revenue") => data[k][:revenue] } 
     end
-    ruportdata.replace_column("Revenue") { |r| "$%0.2f" % r.Revenue }
-    ruportdata.rename_column("name", "Product Name")
+
+    ruportdata.replace_column(I18n.t("adv_report.revenue")) { |r| "$%0.2f" % r.send(I18n.t("adv_report.revenue")) }
+    ruportdata.rename_column("name", I18n.t("adv_report.top_report.top_products.product_name"))
   end
 end

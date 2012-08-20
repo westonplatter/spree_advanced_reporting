@@ -1,14 +1,14 @@
 class Spree::AdvancedReport::IncrementReport::Profit < Spree::AdvancedReport::IncrementReport
   def name
-    "Profit"
+    I18n.t("adv_report.increment_report.profit.name")
   end
 
   def column
-    "Profit"
+    I18n.t("adv_report.increment_report.profit.column")
   end
 
   def description
-    "Total profit in orders, where profit is the sum of item quantity times item price minus item cost price"
+    I18n.t("adv_report.increment_report.profit.description")
   end
 
   def initialize(params)
@@ -17,10 +17,10 @@ class Spree::AdvancedReport::IncrementReport::Profit < Spree::AdvancedReport::In
     self.orders.each do |order|
       date = {}
       INCREMENTS.each do |type|
-        date[type] = get_bucket(type, order.completed_at)
+        date[type] = get_bucket(type, order.completed_at || order.updated_at)
         data[type][date[type]] ||= {
           :value => 0, 
-          :display => get_display(type, order.completed_at),
+          :display => get_display(type, order.completed_at || order.updated_at),
         }
       end
       profit = profit(order)
@@ -30,7 +30,7 @@ class Spree::AdvancedReport::IncrementReport::Profit < Spree::AdvancedReport::In
 
     generate_ruport_data
 
-    INCREMENTS.each { |type| ruportdata[type].replace_column("Profit") { |r| "$%0.2f" % r["Profit"] } }
+    INCREMENTS.each { |type| ruportdata[type].replace_column(name) { |r| "$%0.2f" % r[name] } }
   end
 
   def format_total

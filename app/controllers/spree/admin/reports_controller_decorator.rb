@@ -3,7 +3,7 @@ require_dependency 'spree/admin/reports_controller'
 Spree::Admin::ReportsController.class_eval do
   # TODO there has got to be a more ruby way to do this...
   ADVANCED_REPORTS ||= {}
-  [ :revenue, :units, :profit, :count, :top_products, :top_customers, :geo_revenue, :geo_units, :geo_profit, :transactions].each do |x|
+  [ :outstanding, :revenue, :units, :profit, :count, :top_products, :top_customers, :geo_revenue, :geo_units, :geo_profit, :transactions].each do |x|
     # TODO we should pull the name + description for the report models themselves rather than redefining them as I18n definitions
     ADVANCED_REPORTS[x]= {name: I18n.t("adv_report.#{x}"), :description => I18n.t("adv_report.#{x}")}
   end
@@ -43,7 +43,7 @@ Spree::Admin::ReportsController.class_eval do
   def base_report_render(filename)
     params[:advanced_reporting] ||= {}
     params[:advanced_reporting]["report_type"] = params[:advanced_reporting]["report_type"].to_sym if params[:advanced_reporting]["report_type"]
-    params[:advanced_reporting]["report_type"] ||= :daily
+    params[:advanced_reporting]["report_type"] ||= I18n.t("adv_report.daily").downcase.to_sym
     respond_to do |format|
       format.html { render :template => "spree/admin/reports/increment_base" }
       format.pdf do
@@ -61,6 +61,11 @@ Spree::Admin::ReportsController.class_eval do
         end
       end
     end
+  end
+  
+  def outstanding
+    @orders = Spree::Order.complete.not_canceled.select{ |o| o.outstanding_balance? }
+    @outstanding_balance = @orders.inject(0){ |outstanding, o| outstanding += o.outstanding_balance }
   end
 
   def revenue

@@ -1,5 +1,6 @@
  Spree::Core::Engine.routes.prepend do
-  # TODO there is no way this is the best way to handle this...
+  match '/admin/reports/outstanding' => 'admin/reports#outstanding',  :via  => [:get, :post],
+                                                            :as   => 'outstanding_admin_reports'
 
   match '/admin/reports/revenue' => 'admin/reports#revenue',  :via  => [:get, :post],
                                                               :as   => 'revenue_admin_reports'
