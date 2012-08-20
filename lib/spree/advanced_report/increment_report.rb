@@ -23,8 +23,8 @@ class Spree::AdvancedReport::IncrementReport < Spree::AdvancedReport
         :date_display => "%B %Y",
         :header_display => I18n.t("adv_report.monthly"),
       },
-      I18n.t("adv_report.quaterly").downcase.to_sym => {
-        :header_display => I18n.t("adv_report.quaterly")
+      I18n.t("adv_report.quarterly").downcase.to_sym => {
+        :header_display => I18n.t("adv_report.quarterly")
       },
       I18n.t("adv_report.yearly").downcase.to_sym => {
         :date_bucket => "%Y",
@@ -41,6 +41,7 @@ class Spree::AdvancedReport::IncrementReport < Spree::AdvancedReport
       ruportdata[inc].data.each do |p|
         self.all_data << { "increment" => inc.to_s.capitalize, "key" => p.data["key"], "display" => p.data["display"], "value" => p.data["value"] }
       end
+      Rails.logger.info "THE DATES #{self.dates} : #{inc}"
       ruportdata[inc].sort_rows_by!(["key"])
       ruportdata[inc].remove_column("key")
       ruportdata[inc].rename_column("display", dates[inc][:header_display])
@@ -54,7 +55,7 @@ class Spree::AdvancedReport::IncrementReport < Spree::AdvancedReport
   def get_bucket(type, completed_at)
     if type == I18n.t("adv_report.weekly").downcase.to_sym
       return completed_at.beginning_of_week.strftime("%Y-%m-%d")
-    elsif type == I18n.t("adv_report.quaterly").downcase.to_sym
+    elsif type == I18n.t("adv_report.quarterly").downcase.to_sym
       return completed_at.beginning_of_quarter.strftime("%Y-%m")
     end
     completed_at.strftime(dates[type][:date_bucket])
@@ -65,7 +66,7 @@ class Spree::AdvancedReport::IncrementReport < Spree::AdvancedReport
       #funny business
       #next_week = completed_at + 7
       return completed_at.beginning_of_week.strftime("%m-%d-%Y") # + ' - ' + next_week.beginning_of_week.strftime("%m-%d-%Y")
-    elsif type == I18n.t("adv_report.quaterly").downcase.to_sym
+    elsif type == I18n.t("adv_report.quarterly").downcase.to_sym
       return completed_at.strftime("%Y") + ' Q' + (completed_at.beginning_of_quarter.strftime("%m").to_i/3 + 1).to_s
     end
     completed_at.strftime(dates[type][:date_display])

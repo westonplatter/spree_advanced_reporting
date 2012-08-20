@@ -43,8 +43,8 @@
 </div>
 
 <% content_for :head do -%>
-<% #= javascript_include_tag 'admin/jquery.tablesorter.min.js', 'admin/advanced_reporting.js' %>
-<% #= stylesheet_link_tag 'admin/advanced_reporting' %>
+<%= javascript_include_tag 'admin/advanced_reporting/jquery.tablesorter.min.js', 'admin/advanced_reporting/advanced_reporting.js' %>
+<%= stylesheet_link_tag 'admin/advanced_reporting/advanced_reporting' %>
 <% end -%>
 
 <% if params[:advanced_reporting] -%>

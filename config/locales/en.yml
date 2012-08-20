@@ -7,13 +7,14 @@ en:
       - daily
       - weekly
       - monthly
-      - quaterly
+      - quarterly
       - yearly
     dashboard: Dashboard
     daily: Daily
     weekly: Weekly
     monthly: Monthly
-    Quaterly: Quaterly
+    quarterly: Quarterly
+    yearly: Yearly
     revenue: "Revenue"
     units: "Units"
     profit: "Profit"
@@ -25,8 +26,8 @@ en:
     geo_units: "Geo Units"
     geo_profit: "Geo Profit"
     transactions: Transactions
-    states: Estados
-    countries: Paises
+    states: States
+    countries: Countries
     base:
       range: Date Range
       from: From
@@ -47,9 +48,9 @@ en:
       top_products:
         table:
           - name
-          - Unidades
-          - Receita
-        product_name: "Nome do Produto"
+          - Units
+          - Revenue
+        product_name: Name of Product
         name: "Top Selling Products by Revenue"
         description: "Top selling products, calculated by revenue"
     increment_report:
@@ -73,21 +74,21 @@ en:
       profit:
         table:
           - location
-          - Lucro
+          - Profit
         name: "Profit by Geography"
         description: "Profit divided geographically, into states and countries"
         column: "Profit"
       revenue:
         table:
           - location
-          - Receita
+          - Revenue
         name: "Revenue by Geography"
         description: "Revenue divided geographically, into states and countries"
         column: "Revenue"
       units:
         table:
           - location
-          - Unidades
+          - Units
         name: "Units Sold by Geography"
         description: "Unit sales divided geographically, into states and countries"
         column: "Units"

@@ -14,7 +14,7 @@
     </div>
 
     <ul id="show_data">
-        <li class="selected" id="state">
+        <li id="state">
             <label><%= t("adv_report.states") %></label><br />
             <%= link_to "CSV", @report.download_url(request.fullpath, 'csv', "state") %>
             <%= link_to "PDF", @report.download_url(request.fullpath, 'pdf', "state") %>
@@ -49,7 +49,7 @@ data_<%= type.to_s %>.setValue(<%= i.to_s %>, 1, <%= p.data[@report.column].to_s
 
 var options_<%= type.to_s %> = { 'width' : '800px', 'height' : '500px' };
 <% if type == :state %> 
-    options_<%= type.to_s %>['region'] = 'BR';
+    options_<%= type.to_s %>['region'] = 'US';
         <% end -%>
 
 var <%= type.to_s %>_container = document.getElementById('<%= type.to_s %>_canvas');

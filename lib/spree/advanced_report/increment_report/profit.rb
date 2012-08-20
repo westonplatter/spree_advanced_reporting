@@ -1,10 +1,12 @@
 class Spree::AdvancedReport::IncrementReport::Profit < Spree::AdvancedReport::IncrementReport
   def name
     I18n.t("adv_report.increment_report.profit.name")
+    "Profit"
   end
 
   def column
     I18n.t("adv_report.increment_report.profit.column")
+    "Profit"
   end
 
   def description

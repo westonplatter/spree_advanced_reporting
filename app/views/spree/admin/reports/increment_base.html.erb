@@ -21,7 +21,7 @@
 
     <ul id="show_data">
         <% @report.increments.each do |inc| %>
-            <li <%= 'class=selected' if inc == t("adv_report.daily").downcase.to_sym %> id="<%= inc.to_s %>">
+            <li id="<%= inc.to_s %>">
                 <label><%= inc.to_s.capitalize %></label><br />
                 <%= link_to "CSV", @report.download_url(request.fullpath, 'csv', inc) %>
                 <%= link_to "PDF", @report.download_url(request.fullpath, 'pdf', inc) %>

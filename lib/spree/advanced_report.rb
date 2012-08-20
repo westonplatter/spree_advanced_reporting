@@ -36,14 +36,13 @@ module Spree
         end
       end
 
-<<<<<<< HEAD
       params[:search][:completed_at_not_null] = true
       params[:search][:state_not_eq] = 'canceled'
 
       search = Order.search(params[:search])
-=======
+
+      # angelim/i18n-1-0
       params[:search][:state_equals] ||= "complete"
->>>>>>> angelim/i18n-1-0
 
       # choosing not to do any state filtering here, this is left to the report writer
       # self.orders = search.state_does_not_equal('canceled')
@@ -73,21 +72,18 @@ module Spree
       # Above searchlogic date settings
       self.date_text = "#{I18n.t("adv_report.base.range")}:"
       if self.unfiltered_params
-<<<<<<< HEAD
         if self.unfiltered_params[:created_at_gt] != '' && self.unfiltered_params[:created_at_lt] != ''
           self.date_text += " From #{self.unfiltered_params[:created_at_gt]} to #{self.unfiltered_params[:created_at_lt]}"
         elsif self.unfiltered_params[:created_at_gt] != ''
           self.date_text += " After #{self.unfiltered_params[:created_at_gt]}"
         elsif self.unfiltered_params[:created_at_lt] != ''
           self.date_text += " Before #{self.unfiltered_params[:created_at_lt]}"
-=======
-        if self.unfiltered_params[:created_at_greater_than] != '' && self.unfiltered_params[:created_at_less_than] != ''
-          self.date_text += " #{I18n.t("adv_report.base.from")} #{self.unfiltered_params[:created_at_greater_than]} to #{self.unfiltered_params[:created_at_less_than]}"
-        elsif self.unfiltered_params[:created_at_greater_than] != ''
-          self.date_text += " #{I18n.t("adv_report.base.after")} #{self.unfiltered_params[:created_at_greater_than]}"
-        elsif self.unfiltered_params[:created_at_less_than] != ''
-          self.date_text += " #{I18n.t("adv_report.base.before")} #{self.unfiltered_params[:created_at_less_than]}"
->>>>>>> angelim/i18n-1-0
+        # if self.unfiltered_params[:created_at_greater_than] != '' && self.unfiltered_params[:created_at_less_than] != ''
+        #   self.date_text += " #{I18n.t("adv_report.base.from")} #{self.unfiltered_params[:created_at_greater_than]} to #{self.unfiltered_params[:created_at_less_than]}"
+        # elsif self.unfiltered_params[:created_at_greater_than] != ''
+        #   self.date_text += " #{I18n.t("adv_report.base.after")} #{self.unfiltered_params[:created_at_greater_than]}"
+        # elsif self.unfiltered_params[:created_at_less_than] != ''
+        #   self.date_text += " #{I18n.t("adv_report.base.before")} #{self.unfiltered_params[:created_at_less_than]}"
         else
           self.date_text += " #{I18n.t("adv_report.base.all")}"
         end
@@ -130,17 +126,16 @@ module Spree
       elsif !self.taxon.nil?
         profit = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |profit, li| profit + (li.variant.price - li.variant.cost_price.to_f)*li.quantity }
       end
-      adjustments_profit = order.adjustments.sum(:amount) - order.adjustments.sum(:cost)
-      profit += adjustments_profit
+      profit += order.adjustments.sum(:amount)
       self.product_in_taxon ? profit : 0
     end
 
     def units(order)
-      units = order.line_items.inject(0){ |units, li| units + (li.quantity * li.variant.bundle_quantity)}
+      units = order.line_items.sum(:quantity)
       if !self.product.nil? && product_in_taxon
-        units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += (b.quantity * b.variant.bundle_quantity) }
+        units = order.line_items.select { |li| li.product == self.product }.inject(0) { |a, b| a += b.quantity }
       elsif !self.taxon.nil?
-        units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += (b.quantity * b.variant.bundle_quantity) }
+        units = order.line_items.select { |li| li.product && li.product.taxons.include?(self.taxon) }.inject(0) { |a, b| a += b.quantity }
       end
       self.product_in_taxon ? units : 0
     end
