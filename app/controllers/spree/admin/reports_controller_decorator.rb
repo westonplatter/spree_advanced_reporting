@@ -64,7 +64,7 @@ Spree::Admin::ReportsController.class_eval do
   end
   
   def outstanding
-    @orders = Spree::Order.complete.not_canceled.select{ |o| o.outstanding_balance? }
+    @orders = Spree::Order.complete.where("state != 'canceled'").select{ |o| o.outstanding_balance? }
     @outstanding_balance = @orders.inject(0){ |outstanding, o| outstanding += o.outstanding_balance }
   end
 
