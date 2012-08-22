@@ -12,7 +12,7 @@
 
   <option <%= full_path %> value="<%= value %>">
     <% value_name = value.is_a?(Hash) ? value[:name].downcase.gsub(" ","_") : value.split('/').last.to_s.downcase.gsub(" ","_") rescue nil %>
-    <%= t("adv_report."+value_name) rescue nil %>
+    <%= t("adv_report.#{value_name}") rescue nil %>
   </option>
 <% end %>
 </select>
@@ -23,9 +23,13 @@
     <% end -%>
 
     <div id="order_type">
-      Order Type:<br/>
-      <label><%= radio_button(:advanced_reporting, :order_type, :completed) %>Completed</label>
-      <label><%= radio_button(:advanced_reporting, :order_type, :shipped) %>Shipped</label>
+      Filter by When Order Was:<br/>
+      <%= select(:advanced_reporting, :order_type, [:completed, :shipped], include_blank: 'Report Default') %>
+    </div>
+
+    <div id="state_restriction">
+      State:<br/>
+      <%= collection_select(:advanced_reporting, :state_id, Spree::State.all, :id, :name, { :include_blank => '', :selected => params[:advanced_reporting][:state_id] } ) %>
     </div>
 
     <div id="taxon_products">

@@ -1,7 +1,8 @@
 module Spree
   class AdvancedReport
     include Ruport
-    attr_accessor :orders, :product_text, :date_text, :taxon_text, :ruportdata, :data, :params, :taxon, :product, :product_in_taxon, :unfiltered_params
+    attr_accessor :orders, :product_text, :date_text, :taxon_text, :ruportdata, :search,
+                  :data, :params, :taxon, :product, :product_in_taxon, :unfiltered_params
 
     def name
       I18n.t("adv_report.base.name")
@@ -12,12 +13,16 @@ module Spree
     end
 
     def initialize(params)
-      self.params = params
+      # this enables subclasses to provide different defaults to the search
+      # by setting the defaults before calling super
+      self.params ||= params
+
       self.data = {}
       self.ruportdata = {}
       self.unfiltered_params = params[:search].blank? ? {} : params[:search].clone
 
       params[:search] ||= {}
+      params[:advanced_reporting] ||= {}
 
       if Order.count > 0
         begin
@@ -39,15 +44,37 @@ module Spree
       params[:search][:completed_at_not_null] = true
       params[:search][:state_not_eq] = 'canceled'
 
-      search = Order.search(params[:search])
+      if params[:advanced_reporting][:order_type] == 'shipped'
+        if params[:advanced_reporting][:state_id].present?
+          params[:search][:order_bill_address_state_id_eq] = params[:advanced_reporting][:state_id]
+        end
 
-      # angelim/i18n-1-0
-      params[:search][:state_equals] ||= "complete"
+        # the tricky part here is that orders can have multiple shipments
+        # we need to prevent orders from being included twice in the report
+        # by choosing to include the order in the earliest report possible
+        # (i.e. the first order that shipped) and exclude it from any reports after that
 
-      # choosing not to do any state filtering here, this is left to the report writer
-      # self.orders = search.state_does_not_equal('canceled')
+        # TODO should handle the not cancelled requirement here as well
 
-      self.orders = search.result
+        @search = Shipment.includes(:order).search({
+          :shipped_at_gt => params[:search][:created_at_gt],
+          :shipped_at_lt => params[:search][:created_at_lt],
+        })
+
+        self.orders = @search.result.select do |shipment|
+          return true if shipment.order.shipments.size == 1
+
+          # if the shipment retrieved is the first shipment shipped for the order
+          shipment.order.shipments.sort { |a, b| a.shipped_at <=> b.shipped_at }.first == shipment
+        end.map(&:order)
+      else
+        if params[:advanced_reporting][:state_id].present?
+          params[:search][:bill_address_state_id_eq] = params[:advanced_reporting][:state_id]
+        end
+
+        @search = Order.search(params[:search])
+        self.orders = @search.result
+      end
 
       self.product_in_taxon = true
       if params[:advanced_reporting]
