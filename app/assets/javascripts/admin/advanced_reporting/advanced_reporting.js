@@ -33,7 +33,7 @@ $(function() {
 	});
 
 	$('select#report').change(function() {
-		value = $(this).val()
+		var value = $(this).val()
 		$('div#advanced_report > form').action = value
 
 		if(value.match(/\/count$/) || value.match(/\/top_products$/)) {

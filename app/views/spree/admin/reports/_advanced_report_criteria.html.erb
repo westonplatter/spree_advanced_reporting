@@ -4,18 +4,7 @@
 <% end -%>
 
 <h3><%=t "adv_report.advanced_reports"%></h3>
-<select id="report">
-<% @reports.each do |key, value| %>
-
-  <% full_path = (request.fullpath == "/admin/reports/#{key}") ? 'selected="selected" ' : '' %>
-  <% value = send("#{key}_admin_reports_url".to_sym) %>
-
-  <option <%= full_path %> value="<%= value %>">
-    <% value_name = value.is_a?(Hash) ? value[:name].downcase.gsub(" ","_") : value.split('/').last.to_s.downcase.gsub(" ","_") rescue nil %>
-    <%= t("adv_report.#{value_name}") rescue nil %>
-  </option>
-<% end %>
-</select>
+<%= select(nil, nil, @reports.map { |k, v| [v[:name], send("#{k}_admin_reports_url".to_sym)] }, {selected: request.url }, {name: 'report', id: 'report' }) %>
 <div id="advanced_report_search">
   <%= form_for :search do |s| %>
     <% if @stores -%>
@@ -24,12 +13,12 @@
 
     <div id="order_type">
       Filter by When Order Was:<br/>
-      <%= select(:advanced_reporting, :order_type, [:completed, :shipped], include_blank: 'Report Default') %>
+      <%= select(:advanced_reporting, :order_type, [:completed, :shipped], include_blank: 'Report Default', selected: params[:advanced_reporting][:order_type]) %>
     </div>
 
     <div id="state_restriction">
       State:<br/>
-      <%= collection_select(:advanced_reporting, :state_id, Spree::State.all, :id, :name, { :include_blank => '', :selected => params[:advanced_reporting][:state_id] } ) %>
+      <%= collection_select(:advanced_reporting, :state_id, Spree::State.all, :id, :name, { :include_blank => 'All', :selected => params[:advanced_reporting][:state_id] } ) %>
     </div>
 
     <div id="taxon_products">

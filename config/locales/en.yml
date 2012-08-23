@@ -26,6 +26,7 @@ en:
     geo_units: "Geo Units"
     geo_profit: "Geo Profit"
     transactions: Transactions
+    outstanding: Outstanding
     states: States
     countries: Countries
     base:

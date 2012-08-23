@@ -45,8 +45,13 @@ module Spree
       params[:search][:state_not_eq] = 'canceled'
 
       if params[:advanced_reporting][:order_type] == 'shipped'
+        shipped_search_params = {
+          :shipped_at_gt => params[:search][:created_at_gt],
+          :shipped_at_lt => params[:search][:created_at_lt],
+        }
+
         if params[:advanced_reporting][:state_id].present?
-          params[:search][:order_bill_address_state_id_eq] = params[:advanced_reporting][:state_id]
+          shipped_search_params.merge! :order_bill_address_state_id_eq => params[:advanced_reporting][:state_id]
         end
 
         # the tricky part here is that orders can have multiple shipments
@@ -56,13 +61,10 @@ module Spree
 
         # TODO should handle the not cancelled requirement here as well
 
-        @search = Shipment.includes(:order).search({
-          :shipped_at_gt => params[:search][:created_at_gt],
-          :shipped_at_lt => params[:search][:created_at_lt],
-        })
+        @search = Shipment.includes(:order).search shipped_search_params
 
         self.orders = @search.result.select do |shipment|
-          return true if shipment.order.shipments.size == 1
+          next true if shipment.order.shipments.size == 1
 
           # if the shipment retrieved is the first shipment shipped for the order
           shipment.order.shipments.sort { |a, b| a.shipped_at <=> b.shipped_at }.first == shipment
