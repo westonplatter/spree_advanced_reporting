@@ -1,3 +1,5 @@
+// TODO this would look alot cleaner in coffeescript
+
 $(function() {
 	$('ul#show_data li').click(function() {
 		$('ul#show_data li').not(this).removeClass('selected');
@@ -6,16 +8,20 @@ $(function() {
 		$('div.advanced_reporting_data').not($(id)).hide();
 		$(id).show(); 
 	});
-	$('table.tablesorter').tablesorter();
-	$('table.tablesorter').bind("sortEnd", function() {
-		var section = $(this).parent().attr('id');
-		var even = true;
-		$.each($('div#' + section + ' table tr'), function(i, j) {
-			$(j).removeClass('even').removeClass('odd');
-			$(j).addClass(even ? 'even' : 'odd');
-			even = !even;
+
+	if($('table.tablesorter tbody').length) {
+		$('table.tablesorter').tablesorter();
+		$('table.tablesorter').bind("sortEnd", function() {
+			var section = $(this).parent().attr('id');
+			var even = true;
+			$.each($('div#' + section + ' table tr'), function(i, j) {
+				$(j).removeClass('even').removeClass('odd');
+				$(j).addClass(even ? 'even' : 'odd');
+				even = !even;
+			});
 		});
-	});
+	}
+
 	if($('input#product_id').length > 0) {
 		$('select#advanced_reporting_product_id').val($('input#product_id').val());
 	}
@@ -25,15 +31,16 @@ $(function() {
 	$('div#advanced_report_search form').submit(function() {
 		$('div#advanced_report_search form').attr('action', $('select#report').val());
 	});
-	update_report_dropdowns($('select#report').val());
-	$('select#report').change(function() { update_report_dropdowns($(this).val()); });
+
+	$('select#report').change(function() {
+		value = $(this).val()
+		$('div#advanced_report > form').action = value
+
+		if(value.match(/\/count$/) || value.match(/\/top_products$/)) {
+			$('select#advanced_reporting_product_id,select#advanced_reporting_taxon_id').val('');
+			$('div#taxon_products').hide();
+		} else {
+			$('div#taxon_products').show();
+		}
+	}).trigger('change')
 })
-	
-var update_report_dropdowns = function(value) {	
-	if(value.match(/\/count$/) || value.match(/\/top_products$/)) {
-		$('select#advanced_reporting_product_id,select#advanced_reporting_taxon_id').val('');
-		$('div#taxon_products').hide();
-	} else {
-		$('div#taxon_products').show();
-	}
-};
