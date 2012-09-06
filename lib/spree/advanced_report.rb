@@ -41,13 +41,12 @@ module Spree
         end
       end
 
-      params[:search][:completed_at_not_null] = true
-      params[:search][:state_not_eq] = 'canceled'
-
       if params[:advanced_reporting][:order_type] == 'shipped'
         shipped_search_params = {
           :shipped_at_gt => params[:search][:created_at_gt],
           :shipped_at_lt => params[:search][:created_at_lt],
+          :order_state_not_eq => 'canceled',
+          :order_completed_at_not_null => true
         }
 
         if params[:advanced_reporting][:state_id].present?
@@ -78,12 +77,15 @@ module Spree
           shipment.order.shipments.sort { |a, b| b.shipped_at <=> a.shipped_at }.first == shipment
         end.map(&:order)
       else
+        params[:search][:completed_at_not_null] = true
+        params[:search][:state_not_eq] = 'canceled'
+
         if params[:advanced_reporting][:state_id].present?
           params[:search][:bill_address_state_id_eq] = params[:advanced_reporting][:state_id]
         end
 
         if params[:advanced_reporting][:inventory_units_shipment_id_not_null].present?
-          shipped_search_params[:inventory_units_shipment_id_not_null] = true
+          params[:inventory_units_shipment_id_not_null] = true
         end
 
         @search = Order.search(params[:search])
