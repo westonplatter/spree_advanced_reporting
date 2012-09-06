@@ -16,6 +16,11 @@
       <%= select(:advanced_reporting, :order_type, [:completed, :shipped], include_blank: 'Report Default', selected: params[:advanced_reporting][:order_type]) %>
     </div>
 
+    <div>
+      <%= check_box :advanced_reporting, :inventory_units_shipment_id_not_null, { :checked => params[:advanced_reporting][:inventory_units_shipment_id_not_null] == "1" }, '1', '0' %>
+      Include Only Fully Shipped Orders
+    </div>
+
     <div id="state_restriction">
       State:<br/>
       <%= collection_select(:advanced_reporting, :state_id, Spree::State.all, :id, :name, { :include_blank => 'All', :selected => params[:advanced_reporting][:state_id] } ) %>

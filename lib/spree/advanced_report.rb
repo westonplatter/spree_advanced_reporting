@@ -51,7 +51,11 @@ module Spree
         }
 
         if params[:advanced_reporting][:state_id].present?
-          shipped_search_params.merge! :order_bill_address_state_id_eq => params[:advanced_reporting][:state_id]
+          shipped_search_params[:order_bill_address_state_id_eq] = params[:advanced_reporting][:state_id]
+        end
+
+        if params[:advanced_reporting][:inventory_units_shipment_id_not_null].present?
+          shipped_search_params[:order_inventory_units_shipment_id_not_null] = params[:advanced_reporting][:inventory_units_shipment_id_not_null] == "1"
         end
 
         # the tricky part here is that orders can have multiple shipments
@@ -63,15 +67,23 @@ module Spree
 
         @search = Shipment.includes(:order).search shipped_search_params
 
-        self.orders = @search.result.select do |shipment|
+        self.orders = @search.result(:distinct => true).select do |shipment|
           next true if shipment.order.shipments.size == 1
 
-          # if the shipment retrieved is the first shipment shipped for the order
-          shipment.order.shipments.sort { |a, b| a.shipped_at <=> b.shipped_at }.first == shipment
+          # if the shipment retrieved is the last shipment shipped for the order
+
+          # we only want to record the revenue when all the
+          # shipments associated with the order have gone out
+
+          shipment.order.shipments.sort { |a, b| b.shipped_at <=> a.shipped_at }.first == shipment
         end.map(&:order)
       else
         if params[:advanced_reporting][:state_id].present?
           params[:search][:bill_address_state_id_eq] = params[:advanced_reporting][:state_id]
+        end
+
+        if params[:advanced_reporting][:inventory_units_shipment_id_not_null].present?
+          shipped_search_params[:inventory_units_shipment_id_not_null] = true
         end
 
         @search = Order.search(params[:search])
