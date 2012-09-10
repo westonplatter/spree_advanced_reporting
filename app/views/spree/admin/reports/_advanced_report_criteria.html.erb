@@ -1,11 +1,11 @@
 <% content_for :head do -%>
-  <%= javascript_include_tag 'admin/advanced_reporting/jquery.tablesorter.min.js', 'admin/advanced_reporting/advanced_reporting.js' %>
   <%= stylesheet_link_tag 'admin/advanced_reporting/advanced_reporting' %>
 <% end -%>
 
-<h3><%=t "adv_report.advanced_reports"%></h3>
-<%= select(nil, nil, @reports.map { |k, v| [v[:name], send("#{k}_admin_reports_url".to_sym)] }, {selected: request.url }, {name: 'report', id: 'report' }) %>
 <div id="advanced_report_search">
+  <h3><%=t "adv_report.advanced_reports"%></h3>
+  <%= select(nil, nil, @reports.map { |k, v| [v[:name], send("#{k}_admin_reports_url".to_sym)] }, {selected: request.url }, {name: 'report', id: 'report' }) %>
+
   <%= form_for :search do |s| %>
     <% if @stores -%>
         Store:<br /><%= collection_select(:search, :store_id, @stores, :id, :name, { :include_blank => 'All' } ) %><br /><br/>
