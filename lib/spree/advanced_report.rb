@@ -41,6 +41,21 @@ module Spree
         end
       end
 
+      # offer shipped vs completed order filtering
+      # in some cases, revenue reports should be based on the time when the revenue
+      # is earned (i.e. shipped) not when the order was made or the credit card was processed
+
+      # it is also important to exclude canceled orders and orders that were not completed
+      # before spree 1.1.3 there was a bug that caused Spree::Shipment.shipped_at not be filled
+      # easy fix is to copy the completed_at from the order associated with the shipment
+      #   https://gist.github.com/3187793#file_shipments_shipped_at_fix.rb
+
+      filter_address = 'billing'
+
+      if params[:advanced_reporting][:state_based_on_taxable_address] == '1'
+        filter_address = Spree::Config[:tax_using_ship_address] ? 'shipping' : 'billing'
+      end
+
       if params[:advanced_reporting][:order_type] == 'shipped'
         shipped_search_params = {
           :shipped_at_gt => params[:search][:created_at_gt],
@@ -50,46 +65,56 @@ module Spree
         }
 
         if params[:advanced_reporting][:state_id].present?
-          shipped_search_params[:order_bill_address_state_id_eq] = params[:advanced_reporting][:state_id]
+          shipped_search_params[
+            filter_address == 'shipping' ? :order_ship_address_state_id_eq : :order_bill_address_state_id_eq
+          ] = params[:advanced_reporting][:state_id]
         end
 
-        if params[:advanced_reporting][:inventory_units_shipment_id_not_null].present?
-          shipped_search_params[:order_inventory_units_shipment_id_not_null] = params[:advanced_reporting][:inventory_units_shipment_id_not_null] == "1"
-        end
+        # including the ransack predicate will not speed up the SQL query but will not include only fully shipped orders
+        only_fully_shipped = params[:advanced_reporting][:shipment] == 'fully_shipped'
+        shipped_search_params[:order_inventory_units_shipment_id_not_null] = true if only_fully_shipped
 
         # the tricky part here is that orders can have multiple shipments
         # we need to prevent orders from being included twice in the report
         # by choosing to include the order in the earliest report possible
         # (i.e. the first order that shipped) and exclude it from any reports after that
 
-        # TODO should handle the not cancelled requirement here as well
-
         @search = Shipment.includes(:order).search shipped_search_params
 
         self.orders = @search.result(:distinct => true).select do |shipment|
+          # these manual exclusions could not be done via SQL queries as far as I could tell
+          # they are ordered by least to greatest SQL complexity
+
           next true if shipment.order.shipments.size == 1
 
-          # if the shipment retrieved is the last shipment shipped for the order
+          # if the shipment retrieved is the last shipment shipped for the order, then include the order
+          next false if shipment.order.shipments.sort { |a, b| b.shipped_at <=> a.shipped_at }.first == shipment
 
-          # we only want to record the revenue when all the
-          # shipments associated with the order have gone out
+          # conditionally exclude orders which are not fully shipped
+          next false if only_fully_shipped && shipment.order.inventory_units.detect { |i| i.shipment.blank? }.blank?
 
-          shipment.order.shipments.sort { |a, b| b.shipped_at <=> a.shipped_at }.first == shipment
+          true
         end.map(&:order)
       else
         params[:search][:completed_at_not_null] = true
         params[:search][:state_not_eq] = 'canceled'
 
         if params[:advanced_reporting][:state_id].present?
-          params[:search][:bill_address_state_id_eq] = params[:advanced_reporting][:state_id]
+          params[:search][
+            filter_address == 'shipping' ? :ship_address_state_id_eq : :bill_address_state_id_eq
+          ] = params[:advanced_reporting][:state_id]
         end
 
-        if params[:advanced_reporting][:inventory_units_shipment_id_not_null].present?
-          params[:inventory_units_shipment_id_not_null] = true
-        end
+        only_fully_shipped = params[:advanced_reporting][:shipment] == 'fully_shipped'
+        params[:inventory_units_shipment_id_not_null] = true if only_fully_shipped
 
         @search = Order.search(params[:search])
-        self.orders = @search.result
+
+        self.orders = @search.result(:distinct => true).select do |order|
+          next false if only_fully_shipped && order.inventory_units.detect { |i| i.shipment.blank? }.blank?
+
+          true
+        end
       end
 
       self.product_in_taxon = true
@@ -121,6 +146,8 @@ module Spree
           self.date_text += " After #{self.unfiltered_params[:created_at_gt]}"
         elsif self.unfiltered_params[:created_at_lt] != ''
           self.date_text += " Before #{self.unfiltered_params[:created_at_lt]}"
+
+        # TODO this was pulled in from another branch and has some nice internationalization improvements
         # if self.unfiltered_params[:created_at_greater_than] != '' && self.unfiltered_params[:created_at_less_than] != ''
         #   self.date_text += " #{I18n.t("adv_report.base.from")} #{self.unfiltered_params[:created_at_greater_than]} to #{self.unfiltered_params[:created_at_less_than]}"
         # elsif self.unfiltered_params[:created_at_greater_than] != ''

@@ -13,12 +13,17 @@
 
     <div id="order_type">
       Filter by When Order Was:<br/>
-      <%= select(:advanced_reporting, :order_type, [:completed, :shipped], include_blank: 'Report Default', selected: params[:advanced_reporting][:order_type]) %>
+      <%= select(:advanced_reporting, :order_type, [:completed, :shipped], include_blank: t(:report_default), selected: params[:advanced_reporting][:order_type]) %>
     </div>
 
     <div>
-      <%= check_box :advanced_reporting, :inventory_units_shipment_id_not_null, { :checked => params[:advanced_reporting][:inventory_units_shipment_id_not_null] == "1" }, '1', '0' %>
-      Include Only Fully Shipped Orders
+      Include only orders that are:<br/>
+      <%= select(:advanced_reporting, :shipment, [:fully_shipped, :partial_shipped], include_blank: t(:report_default), selected: params[:advanced_reporting][:shipment]) %>
+    </div>
+
+    <div>
+       <%= check_box :advanced_reporting, :state_based_on_taxable_address, { :checked => params[:advanced_reporting][:state_based_on_taxable_address] == "1" }, '1', '0' %>
+       Match State Based on Taxable Address
     </div>
 
     <div id="state_restriction">
