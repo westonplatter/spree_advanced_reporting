@@ -16,8 +16,8 @@ Gem::Specification.new do |s|
 
   s.has_rdoc = true
 
-  s.add_dependency('spree_core', '~> 1.1.2')
+  s.add_dependency 'spree_core', '>= 1.1.2'
 
   # use https://github.com/iloveitaly/ruport/tree/wicked-pdf
-  s.add_dependency('ruport', '>= 1.8')
+  s.add_dependency 'ruport', '>= 1.8'
 end
