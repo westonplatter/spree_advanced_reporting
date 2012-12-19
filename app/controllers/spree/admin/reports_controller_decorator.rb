@@ -5,7 +5,7 @@ Spree::Admin::ReportsController.class_eval do
   # this is a workaround hack to get the report definitions to load
 
   I18n.load_path << Spree::AdvancedReporting::Engine.config.paths["config/locales"].first
-  I18n.locale = Spree::Config[:default_locale]
+  I18n.locale = I18n.default_locale
   I18n.reload!
 
   # TODO there has got to be a more ruby way to do this...
