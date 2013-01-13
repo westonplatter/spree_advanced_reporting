@@ -29,7 +29,7 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
           gateway_link = link_to(payment.response_code, "https://account.authorize.net/UI/themes/anet/transaction/transactiondetail.aspx?transID=#{payment.response_code}", target: '_blank')
         end
 
-        if payment.source.class == Spree::Creditcard
+        if payment.source.class == Spree::CreditCard
           credit_cart_type = payment.source.cc_type
         else
           # it seems as though a previous payment can be used a payment type
