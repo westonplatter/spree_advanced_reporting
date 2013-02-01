@@ -71,6 +71,8 @@ module Spree
         end
 
         # including the ransack predicate will not speed up the SQL query but will not include only fully shipped orders
+        # TODO hopefully we can trust spree's built in shipment state in the future
+        # https://github.com/spree/spree/blob/1-3-stable/core/app/models/spree/order_updater.rb#L68
         only_fully_shipped = params[:advanced_reporting][:shipment] == 'fully_shipped'
         shipped_search_params[:order_inventory_units_shipment_id_not_null] = true if only_fully_shipped
 
@@ -85,13 +87,11 @@ module Spree
           # these manual exclusions could not be done via SQL queries as far as I could tell
           # they are ordered by least to greatest SQL complexity
 
-          next true if shipment.order.shipments.size == 1
-
           # if the shipment retrieved is the last shipment shipped for the order, then include the order
-          next false if shipment.order.shipments.sort { |a, b| b.shipped_at <=> a.shipped_at }.first == shipment
+          next false if shipment.order.shipments.size > 1 && shipment.order.shipments.sort { |a, b| b.shipped_at <=> a.shipped_at }.first == shipment
 
           # conditionally exclude orders which are not fully shipped
-          next false if only_fully_shipped && shipment.order.inventory_units.detect { |i| i.shipment.blank? }.blank?
+          next false if only_fully_shipped && shipment.order.inventory_units.where(:shipment_id => nil).present?
 
           true
         end.map(&:order)
@@ -111,8 +111,8 @@ module Spree
         @search = Order.search(params[:search])
 
         self.orders = @search.result(:distinct => true).select do |order|
-          next false if only_fully_shipped && order.inventory_units.detect { |i| i.shipment.blank? }.blank?
-
+          # exclude orders that are not fully shipped
+          next false if only_fully_shipped && order.inventory_units.where(:shipment_id => nil).present?
           true
         end
       end
