@@ -38,7 +38,7 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
         end
 
         (card_listing[credit_cart_type] ||= []) << {
-          "date" => payment.source.created_at.to_formatted_s(:db),
+          "date" => payment.source.created_at.to_formatted_s,
           "type" => credit_cart_type.humanize.titlecase,
           "id" => gateway_link,
           "total" => payment.amount,
