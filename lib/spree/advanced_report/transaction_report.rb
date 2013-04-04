@@ -7,7 +7,7 @@ class Spree::AdvancedReport::TransactionReport < Spree::AdvancedReport
   end
 
   def description
-    "Top purchasing customers, calculated by revenue"
+    "List of transactions that passed through the gateway"
   end
 
   def initialize(params)
