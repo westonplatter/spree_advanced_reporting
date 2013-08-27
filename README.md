@@ -1,6 +1,6 @@
 Spree Advanced Reporting
 ========================
-[![Build Status](https://travis-ci.org/westonplatter/spree_advanced_reporting.png?branch=master)](https://travis-ci.org/westonplatter/spree_advanced_reporting)
+[![Build Status](https://travis-ci.org/iloveitaly/spree_advanced_reporting.png?branch=master)](https://travis-ci.org/iloveitaly/spree_advanced_reporting)
 
 This branch is for use with Spree 1.3.0 and later.
 
